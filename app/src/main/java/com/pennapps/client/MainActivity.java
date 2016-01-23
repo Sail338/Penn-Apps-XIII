@@ -2,21 +2,30 @@ package com.pennapps.client;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.*;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import io.socket.client.IO;
 import io.socket.client.Socket;
-
+import io.socket.emitter.Emitter;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import io.socket.emitter.Emitter;
+import org.w3c.dom.Entity;
 
 
 import java.net.URISyntaxException;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity  {
     private SensorManager manager;
     private Sensor sensor;
     float[] coords = new float[3];
@@ -66,12 +75,9 @@ public class MainActivity extends Activity {
 
             socket = IO.socket("http://10.103.226.100:420");
             socket.open();
+            listen();
             //creates sensor manager
-            for (int i = 0; i < 1000; i++) {
 
-
-
-            }
         } catch (URISyntaxException e) {
             Log.e("ERROR", e.getMessage());
         }
@@ -131,7 +137,7 @@ public class MainActivity extends Activity {
             Log.i("X", Float.toString(coords[0]));
             coords[1] = deltaRotationVector[1];
             coords[2] = deltaRotationVector[2];
-            socket.emit("satan", "{"+coords[0]+","+coords[1]+","+coords[2]+"}");
+           // socket.emit("satan", "{"+coords[0]+","+coords[1]+","+coords[2]+"}");
             // User code should concatenate the delta rotation we computed with the current rotation
             // in order to get the updated rotation.
             // rotationCurrent = rotationCurrent * deltaRotationMatrix;
@@ -144,5 +150,53 @@ public class MainActivity extends Activity {
 
 
     };
+
+
+    public void listen(){
+        socket.on("420", new Emitter.Listener() {
+
+            @Override
+            public void call(final Object... args) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("DATA","RECEVIED");
+                        if(args[0] instanceof String){
+                            Log.d("SATAN",args[0].toString());
+                            byte[] getdata  = Base64.decode(args[0].toString().getBytes(),Base64.NO_WRAP);
+                            Bitmap bmp = BitmapFactory.decodeByteArray(getdata, 0,getdata.length);
+                            if(!args[0].toString().equals("camera")){
+                                displayImage(bmp);
+                                return;
+                            }
+
+
+                            return;
+                        }
+                        if(args[0] instanceof JSONArray){
+                            Log.d("SATAN",args[0].toString());
+                            return;
+                        }
+
+                    }
+                });
+
+            }
+        }) ;
+
+
+    }
+    public void displayImage(Bitmap map){
+
+
+        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        Log.d("RECIEVED","DECODED IMAGE");
+        imageView.setImageBitmap(map);
+
+
+    }
+
+
+
 
 }
