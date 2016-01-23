@@ -75,7 +75,7 @@ public class MainActivity extends Activity  {
 
             socket = IO.socket("http://10.103.226.100:420");
             socket.open();
-            listen();
+        //   listen();
             //creates sensor manager
 
         } catch (URISyntaxException e) {
@@ -137,7 +137,7 @@ public class MainActivity extends Activity  {
             Log.i("X", Float.toString(coords[0]));
             coords[1] = deltaRotationVector[1];
             coords[2] = deltaRotationVector[2];
-           // socket.emit("satan", "{"+coords[0]+","+coords[1]+","+coords[2]+"}");
+            socket.emit("satan", coords[0]+","+coords[1]+","+coords[2]);
             // User code should concatenate the delta rotation we computed with the current rotation
             // in order to get the updated rotation.
             // rotationCurrent = rotationCurrent * deltaRotationMatrix;
