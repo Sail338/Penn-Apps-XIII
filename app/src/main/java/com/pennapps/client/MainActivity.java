@@ -103,7 +103,12 @@ public class MainActivity extends Activity  {
                 float axisX = event.values[0];
                 float axisY = event.values[1];
                 float axisZ = event.values[2];
+                coords[0] = event.values[0];
+                coords[1] =event.values[1];
+                coords[2]= event.values[2];
 
+                Log.e("LOG",Float.toString(coords[0]));
+                socket.emit("satan", coords[0]+","+coords[1]+","+coords[2]);
 
 
                 // Calculate the angular speed of the sample
@@ -133,11 +138,9 @@ public class MainActivity extends Activity  {
             float[] deltaRotationMatrix = new float[9];
             manager.getRotationMatrixFromVector(deltaRotationMatrix, deltaRotationVector);
 
-            coords[0] = deltaRotationVector[0];
             Log.i("X", Float.toString(coords[0]));
-            coords[1] = deltaRotationVector[1];
-            coords[2] = deltaRotationVector[2];
-            socket.emit("satan", coords[0]+","+coords[1]+","+coords[2]);
+
+
             // User code should concatenate the delta rotation we computed with the current rotation
             // in order to get the updated rotation.
             // rotationCurrent = rotationCurrent * deltaRotationMatrix;
