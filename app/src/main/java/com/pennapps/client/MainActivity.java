@@ -21,11 +21,15 @@ public class MainActivity extends AppCompatActivity {
     private SensorManager manager;
     private Sensor sensor;
     float[] coords;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = manager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         socket.connect();
+
     }
 
     @Override
@@ -57,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
             socket.open();
         //creates sensor manager
             for(int i=0;i<1000;i++) {
-                socket.emit("satan", i);
+                socket.emit("satan",sensor.getName() );
+
             }
         } catch(URISyntaxException e){
             Log.e("ERROR",e.getMessage());
@@ -69,9 +74,10 @@ public class MainActivity extends AppCompatActivity {
     private final float[] deltaRotationVector = new float[4];
     private float timestamp;
 
-    public void onSensorChanged(SensorEvent event) {
+    public  void onSensorChanged(SensorEvent event) {
         // This timestep's delta rotation to be multiplied by the current rotation
         // after computing it from the gyro sample data.
+        Log.e("TIMESTAMPE",Float.toString(timestamp));
         if (timestamp != 0) {
             final float dT = (event.timestamp - timestamp) * NS2S;
             // Axis of the rotation sample, not normalized yet.
@@ -105,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         timestamp = event.timestamp;
         float[] deltaRotationMatrix = new float[9];
         manager.getRotationMatrixFromVector(deltaRotationMatrix, deltaRotationVector);
+        Log.i("X",Float.toString(coords[0]));
         coords[0] = deltaRotationVector[0];
         coords[1] = deltaRotationVector[1];
         coords[2] = deltaRotationVector[2];
